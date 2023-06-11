@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "bridge-iframe-api": "^0.4.11"
+  }
+}
