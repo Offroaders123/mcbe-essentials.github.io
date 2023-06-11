@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
     define([], factory);

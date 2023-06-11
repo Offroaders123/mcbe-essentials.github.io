@@ -1,4 +1,5 @@
-var apps = [
+// @ts-nocheck
+var appsOld = [
   {
     name: "Shape Coordinate Generator",
     icon: {

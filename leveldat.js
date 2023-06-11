@@ -5,6 +5,10 @@
 */
 
 //Thanks to https://stackoverflow.com/a/43933693 for this essential piece of code!!
+/**
+ * @param { typeof Uint8Array } resultConstructor
+ * @param { ...Uint8Array } arrays
+*/
 function concatenate(resultConstructor, ...arrays) {
   let totalLength = 0;
   for (const arr of arrays) {
@@ -20,6 +24,9 @@ function concatenate(resultConstructor, ...arrays) {
 }
 
 const datHandler = {
+  /**
+   * @param { Uint8Array } brokenldb
+  */
   generateHeader: function(brokenldb){
     var byteLength = brokenldb.byteLength;
     
@@ -27,9 +34,15 @@ const datHandler = {
     
     return concatenate(Uint8Array, Uint8Array.of(8, 0, 0, 0), fileSize, brokenldb);
   },
+  /**
+   * @param { Uint8Array } data
+  */
   fix: function(data){
     return concatenate(Uint8Array, datHandler.generateHeader(data), data);
   },
+  /**
+   * @param { number } number
+  */
   numTo8Bit: function(number){
     var output = [0, 0, 0, 0];
     output[3] = (Math.floor(number / 16777216));
@@ -43,6 +56,9 @@ const datHandler = {
     
     return output;
   },
+  /**
+   * @param { bigint } bint
+  */
   generateLongTag: function(bint){
     if(typeof bint !== 'bigint') throw new Error('generateLongTag must have a BigInt as its argument');
     class BigIntExtended extends Array {
@@ -63,6 +79,9 @@ const datHandler = {
     
     return output;
   },
+  /**
+   * @param { [number,number] } long
+  */
   longTagValue: function(long){
     return BigInt.asIntN(64, BigInt(long[0]) << 32n) | BigInt.asUintN(32, BigInt(long[1]))
   }

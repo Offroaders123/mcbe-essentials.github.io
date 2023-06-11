@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 //Please use pnbt.js instead, a browserified verison of Prismarine-JS. This version of NBT.js is no longer supported by MCBE Essentials
 /*
 	NBT.js - a JavaScript parser for NBT archives
