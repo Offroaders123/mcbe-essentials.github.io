@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 //ReBrainer's Item Engine
 //<minecraft-item identifier="minecraft:diamond_sword" count="2"></mcitem>
-async function fetchData() {
+async function fetchDataAlt() {
   //Get vanilla item data
 	mcitems.data.items = await fetch(
 		'https://unpkg.com/minecraft-textures@1.19.0/dist/textures/json/1.19.id.json'
@@ -16,7 +18,7 @@ async function fetchData() {
 		mcitems.data.customitems = JSON.parse(window.localStorage.customItems)
 }
 
-class MinecraftItem extends HTMLElement {
+class MinecraftItemAlt extends HTMLElement {
   static get observedAttributes(){
     return ['identifier', 'count', 'damage', 'width', 'height'];
   }

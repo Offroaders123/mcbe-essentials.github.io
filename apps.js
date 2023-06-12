@@ -1,3 +1,43 @@
+/**
+ * @typedef App
+ * @property { string } name
+ * @property { AppIcon } icon
+ * @property { string } link
+ * @property { boolean } [confirmUnload] Not sure if this one is meant to be optional, looks like some apps are missing the `confirmedUnload` property.
+ * @property { true } [hideEmbedded]
+ * @property { AppTags[] } [tags]
+ * @property { App[] } [subapps]
+ * @property { true } [discontinued]
+ * @property { true } [beta]
+ * @property { boolean } [tba] This appears to be deprecated.
+ * @property { boolean } [bridge]
+*/
+
+/**
+ * @typedef AppIcon
+ * @property { { main: string; list: string; } } class
+ * @property { string } data
+*/
+
+/**
+ * @typedef AppTags
+ * @property { string } title
+ * @property { string } backgroundcolor
+ * @property { string } fontcolor
+ * @property { string[] } conditions
+*/
+
+/**
+ * @typedef AppCategory
+ * @type { "Editors" | "Generators" | "Visualizers" | "Converters" }
+*/
+
+/**
+ * @typedef AppsGlobal
+ * @type { { [K in AppCategory]: App[] } & { [category: string]: App[]; } }
+*/
+
+/** @type { AppsGlobal } */
 var apps = {
   Editors: [
     {
@@ -51,7 +91,7 @@ var apps = {
       tags: [
         {
           title: "NEW",
-          "//backgroundcolor": "#5e9bef",
+          //"backgroundcolor": "#5e9bef",
           "backgroundcolor": "green",
           fontcolor: "white",
           conditions: [

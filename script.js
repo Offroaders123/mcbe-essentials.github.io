@@ -1,23 +1,24 @@
 //Load navigation bars
 if(document.getElementById("left")){
   fetch('/navleft.html').then((response) => response.text()).then((data) => {
-    document.getElementById("left").innerHTML = data;
+    /** @type { HTMLDivElement } */ (document.getElementById("left")).innerHTML = data;
     loadApps();
   });
 }
 
 if(document.getElementById("head")){
   fetch('/navtop.html').then((response) => response.text()).then((data) => {
-    document.getElementById("head").innerHTML = data;
+    /** @type { HTMLDivElement } */ (document.getElementById("head")).innerHTML = data;
     if(location.hostname == "mcbe-essentials.glitch.me"){ 
-      document.getElementById("head").innerHTML += "<span class='devviewstable' onclick='openDevWindow()'>Dev Tools</span>";
+      /** @type { HTMLDivElement } */ (document.getElementById("head")).innerHTML += "<span class='devviewstable' onclick='openDevWindow()'>Dev Tools</span>";
     }
   });
 }
 
 window.bridge = {
   connected: false,
-  openedFile: undefined
+  openedFile: "",
+  openedPath: ""
 };
 
 //General code
@@ -32,9 +33,10 @@ if(window.location.host == "mcbe-essentials.glitch.me"){
   //document.getElementById("head").innerHTML += "<span style='margin-left:12px;' class='devviewstable' onclick='window.location.href = window.location.href.replace(\"glitch.me\", \"github.io\");'>View Stable Page</span><span class='devviewstable' onclick='reloadCSS();'>Reload Styleshets</span><span class='devviewstable' onclick='reloadCSS();'>Reload Styleshets</span>";
 }
 
+/** @type { Window } */
 var devWindow;
 function openDevWindow(){
-  devWindow = window.open("/console/", "DevWindow", "width=300,height=400");
+  devWindow = /** @type { Window } */ (window.open("/console/", "DevWindow", "width=300,height=400"));
   window.onerror = function(error, url, line) {
     //controller.sendLog({acc:'error', data:'ERR:'+error+' URL:'+url+' L:'+line});
     devWindow.newError({data: error, url: url, line: line});
@@ -67,12 +69,12 @@ function loadApps(){
   if(window.location.pathname == "/home" || window.location.pathname == "/"){
     idModifier = "-home";
   }
-  for(let category of Object.keys(apps)){
-    document.getElementById(category + idModifier).innerHTML = "";
+  for(let category of /** @type { AppCategory[] } */ (Object.keys(apps))){
+    /** @type { HTMLElement } */ (document.getElementById(category + idModifier)).innerHTML = "";
     for(let app of apps[category]){
       var label = document.createElement("a");
-      label.classList = ['app-label'];
-      document.getElementById(category + idModifier).appendChild(label);
+      label.classList.add('app-label');
+      /** @type { HTMLElement } */ (document.getElementById(category + idModifier)).appendChild(label);
       loadApp(app, label, category);
       
       if(app.subapps){
@@ -81,13 +83,13 @@ function loadApps(){
         
         for(let subapp of app.subapps){
           var subapplabel = document.createElement("a");
-          subapplabel.classList = ['app-label'];
+          subapplabel.classList.add('app-label');
           subapplist.appendChild(subapplabel);
           loadApp(subapp, subapplabel, category);
         }
         
         subapplistcontainer.appendChild(subapplist);
-        document.getElementById(category + idModifier).appendChild(subapplistcontainer);
+        /** @type { HTMLElement } */ (document.getElementById(category + idModifier)).appendChild(subapplistcontainer);
       }
     }
   }
@@ -97,6 +99,11 @@ function reloadCSS(){
   var links = document.getElementsByTagName("link"); for (var i = 0; i < links.length;i++) { var link = links[i]; if (link.rel === "stylesheet") {link.href += "?"; }}
 }
 
+/**
+ * @param { App } path
+ * @param { HTMLAnchorElement } elem
+ * @param { AppCategory } category
+*/
 function loadApp(path, elem, category){
   //main;list
   if(!path) return;
@@ -178,7 +185,7 @@ function loadApp(path, elem, category){
       taggroup.appendChild(newtag);
     }
     
-    if(path.hasOwnProperty("tags") && path.tags.constructor == Array){
+    if(typeof path.tags !== "undefined" && path.tags.constructor == Array){
       for(let tag of path.tags){
         let tagtitle = tag.title || "BETA";
         let tagbg = tag.backgroundcolor || "red";
@@ -186,7 +193,7 @@ function loadApp(path, elem, category){
         let conditions = tag.conditions || []
         
         let newtag = document.createElement("tag");
-        newtag.classList = ["smalltag"];
+        newtag.classList.add("smalltag");
         if(conditions.includes("!selected")) newtag.classList.toggle("hide-selected", true)
         if(conditions.includes("selected")) newtag.classList.toggle("show-selected", true)
         newtag.innerHTML = tagtitle;
@@ -206,6 +213,9 @@ function loadApp(path, elem, category){
 for(let el of document.getElementsByTagName('textarea')) el.spellcheck = false;
 for(let el of document.getElementsByTagName('input')) el.spellcheck = false;
 
+/**
+ * @param { HTMLElement } btn
+*/
 function toggleMenu(btn){
   document.body.classList.toggle("mobile-menu-visible");
 }
@@ -245,6 +255,9 @@ if(window.parent != window){
   document.body.classList.toggle("embedded-frame", true);
 }
 
+/**
+ * @param { string } jsonString
+*/
 function sterilizeJSON(jsonString){
   jsonString = jsonString.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m);
   return jsonString;
@@ -254,8 +267,11 @@ function sterilizeJSON(jsonString){
 let snackbarel = document.createElement("snackbar");
 snackbarel.id = "snackbar";
 document.body.appendChild(snackbarel);
+/**
+ * @param { string } message
+*/
 function snackbar(message, delay = 3000, permanent = false) {
-  var x = document.getElementById("snackbar");
+  var x = /** @type { HTMLElement } */ (document.getElementById("snackbar"));
   x.innerHTML = message;
   if(permanent){
     x.style.visibility = "visible";

@@ -18,7 +18,7 @@ async function fetchData() {
   //Append tooltip element to page
   let tooltipel = document.createElement("div");
   tooltipel.style.display = "none";
-  tooltipel.classList = ["tooltip"];
+  tooltipel.classList.add("tooltip");
   tooltipel.innerHTML = '<span class="tooltip-name" style="display: block">Item Name</span><span class="tooltip-enchs" style="display: block">Efficiency V</span><span class="tooltip-lore" style="display: block">Lore</span><span class="tooltip-identifier">minecraft:identifier</span>';
   document.body.appendChild(tooltipel);
 }
@@ -211,8 +211,8 @@ var mcitems = {
       image.setAttribute('class', 'mcitemdisplay');
       image.src = itemdata.texture;
       image.setAttribute('data-title', itemdata.readable);
-      image.style.height = item.getAttribute("height");
-      image.style.width = item.getAttribute("width");
+      image.style.height = /** @type { string } */ (item.getAttribute("height"));
+      image.style.width = /** @type { string } */ (item.getAttribute("width"));
       image.draggable = false;
 
       const count = document.createElement('span');

@@ -7,4 +7,8 @@ declare global {
     openedPath: string;
   };
   var iapi: Channel;
+
+  interface HTMLElementTagNameMap {
+    "mcitem": MinecraftItem;
+  }
 }
