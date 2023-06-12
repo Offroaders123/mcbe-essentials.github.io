@@ -6,6 +6,11 @@
 */
 import { Channel } from "https://cdn.skypack.dev/bridge-iframe-api/"
 
+/**
+ * @param { Uint8Array } filedata
+ * @param { string } filereference
+ * @param { string } filepath
+*/
 function bImport(filedata, filereference, filepath){
   console.log(filedata)
   //const filedata = await iapi.trigger('fs.readFile', path);
@@ -15,7 +20,7 @@ function bImport(filedata, filereference, filepath){
     document.getElementById("upload2").style.display="none";
   }*/
   
-  importFile(new File([filedata], 'file'), 'importedData', document.getElementById("dataFileInput").getAttribute("readertype"), parseImportedData);
+  importFile(new File([filedata], 'file'), 'importedData', /** @type { HTMLInputElement } */ (document.getElementById("dataFileInput")).getAttribute("readertype"), parseImportedData);
   window.bridge.openedFile = filereference;
   window.bridge.openedPath = filepath;
 }

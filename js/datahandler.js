@@ -17,10 +17,22 @@
   4. Website's global script.js
 */
 
+/**
+ * @typedef ReaderType
+ * @type { "text" | "arraybuffer" | "dataurl" | "binarystring" | "arraybuffer/text" }
+*/
+
+/**
+ * @param { File } file
+ * @param { string } projectVariable
+ * @param { ReaderType } readertype
+ * @param { (file: File) => void } callback
+*/
 function importFile(file, projectVariable, readertype, callback){
   
   var reader = new FileReader();
   reader.onload = function(e){
+    // @ts-expect-error - The type checker didn't like indexing onto the global scope with an arbitrary unknown key
     window[projectVariable] = e.target.result;
     callback(file);
   }
@@ -39,8 +51,8 @@ function importFile(file, projectVariable, readertype, callback){
       //Unique to Structure Editor, this will read as text if a JSON file is imported, but read as ArrayBuffer if any other type is imported.
       if(window.location.pathname === "/structure-editor/old/"){
         //Show loading button in Legacy Structure Editor
-        document.getElementById("loading2").style.display = "block";
-        document.getElementById("upload2").style.display = "none";
+        /** @type { HTMLLabelElement } */ (document.getElementById("loading2")).style.display = "block";
+        /** @type { HTMLLabelElement } */ (document.getElementById("upload2")).style.display = "none";
       }
       console.log(file);
       if(file.name.endsWith(".json")){
@@ -51,6 +63,7 @@ function importFile(file, projectVariable, readertype, callback){
         console.log('ab');
       }
       break;
+    case "text":
     default:
       reader.readAsText(file);
   }
@@ -63,6 +76,11 @@ if(!window.saveAs){
   document.head.appendChild(sa);
 }
 
+/**
+ * @param { Blob } file
+ * @param { string } name
+ * @param { string } custombridgepath
+*/
 function exportFile(file, name, custombridgepath){
   //The user is attempting to save the file. 
   if(window.iapi && window.bridge.openedFile && window.bridge.connected){
@@ -82,18 +100,19 @@ function exportFile(file, name, custombridgepath){
 
 //Check if app supports datahandler file importing
 if(document.getElementById("dataFileInput")){
-  const projectInputElement = document.getElementById("dataFileInput");
+  const projectInputElement = /** @type { HTMLInputElement } */ (document.getElementById("dataFileInput"));
   
   //Set the filereader type to "text" by default
+  /** @type { ReaderType } */
   var readertype = "text";
   //Change the filereader type if the <input> element contains a "readertype" attribute
   if(projectInputElement.hasAttribute("readertype")){
-    readertype = projectInputElement.getAttribute("readertype");
+    readertype = /** @type { ReaderType } */ (projectInputElement.getAttribute("readertype"));
   }
   
   //Add the event listener to the input element
   projectInputElement.addEventListener("change", function(){
-    importFile(this.files[0], 'importedData', readertype, parseImportedData);
+    importFile(/** @type { FileList } */ (this.files)[0], 'importedData', readertype, parseImportedData);
   });
 }
 
@@ -106,7 +125,7 @@ function changeExportButton(){
   
   //Structure Editor
   if(document.querySelector(".export-type")){
-    document.querySelector(".export-type").style.display = "none";
+    /** @type { HTMLSelectElement } */ (document.querySelector(".export-type")).style.display = "none";
   }
 }
 
