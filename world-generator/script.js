@@ -1,21 +1,26 @@
 const nbt = require('prismarine-nbt');
 const { Buffer } = require('buffer');
 const jszip = new JSZip();
-var worldArchive = false;
+/** @type { JSZip } */
+var worldArchive;
+/** @type { any } */
 var leveldat = {};
 var unparsedldb = {};
 
+/**
+ * @param { "flat" | "infinite" | "old" } typeclass
+ */
 function selectWorldType(typeclass){
-  for(let el of document.getElementById("main-page").getElementsByTagName("tr")){
+  for(let el of /** @type { HTMLTableSectionElement } */ (document.getElementById("main-page")).getElementsByTagName("tr")){
     el.style.display = "none";
   }
   
-  var group = document.getElementById("main-page").getElementsByClassName(typeclass);
+  var group = /** @type { HTMLCollectionOf<HTMLTableRowElement> } */ (/** @type { HTMLTableSectionElement } */ (document.getElementById("main-page")).getElementsByClassName(typeclass));
   for(let el of group){
     el.style.display = "table-row";
   }
   
-  var group = document.getElementById("main-page").getElementsByClassName('all');
+  var group = /** @type { HTMLCollectionOf<HTMLTableRowElement> } */ (/** @type { HTMLTableSectionElement } */ (document.getElementById("main-page")).getElementsByClassName('all'));
   for(let el of group){
     el.style.display = "table-row";
   }
@@ -24,21 +29,21 @@ function selectWorldType(typeclass){
 }
 
 function loadWorldArchive(){
-  worldArchive.file("level.dat").async("arrayBuffer").then(res => nbt.parse(Buffer.from(res))).then(function(result){
+  /** @type { import('jszip').JSZipObject } */ (worldArchive.file("level.dat")).async("arraybuffer").then(res => nbt.parse(Buffer.from(res))).then(function(result){
     unparsedldb = result;
     leveldat = result.parsed;
     if(leveldat.value.Generator.value == 2){
       flatWorldLayers = JSON.parse(leveldat.value["FlatWorldLayers"].value);
       renderFlatWorld();
     } else if(leveldat.value.Generator.value == 0) {      
-      document.getElementById("old-width").value = leveldat.value.limitedWorldWidth.value;
-      document.getElementById("old-depth").value = leveldat.value.limitedWorldDepth.value;
-      document.getElementById("old-x").value = leveldat.value.LimitedWorldOriginX.value;
-      document.getElementById("old-z").value = leveldat.value.LimitedWorldOriginZ.value;
+      /** @type { HTMLInputElement } */ (document.getElementById("old-width")).value = leveldat.value.limitedWorldWidth.value;
+      /** @type { HTMLInputElement } */ (document.getElementById("old-depth")).value = leveldat.value.limitedWorldDepth.value;
+      /** @type { HTMLInputElement } */ (document.getElementById("old-x")).value = leveldat.value.LimitedWorldOriginX.value;
+      /** @type { HTMLInputElement } */ (document.getElementById("old-z")).value = leveldat.value.LimitedWorldOriginZ.value;
 
       //document.getElementById("old-seed").value = "";
     } else {
-      document.getElementById("inf-biome").value = leveldat.value.BiomeOverride.value;
+      /** @type { HTMLSelectElement } */ (document.getElementById("inf-biome")).value = leveldat.value.BiomeOverride.value;
       //document.getElementById("inf-seed").value = "";
     }
   });
@@ -58,7 +63,8 @@ function loadWorldArchive(){
   }
 });*/
 
-var biomeData = false;
+/** @type { any } */
+var biomeData;
 
 async function fetchData(){
   var ids = await fetch('https://raw.githubusercontent.com/bridge-core/editor-packages/main/packages/minecraftBedrock/schema/general/vanilla/identifiers.json').then(data => data.json());
@@ -76,25 +82,29 @@ var worldfiles = {
   old: "https://cdn.glitch.global/17ff8eee-9239-4ba0-8a5c-9263261550b5/Old%20World%20Template.mcworld?v=1655059676533"
 };
 
+/**
+ * @param { "flat" | "infinite" | "old" } type
+*/
 async function fetchWorld(type){
   await fetch(worldfiles[type]).then(resp => resp.arrayBuffer())
   .then(buf => jszip.loadAsync(Buffer.from(buf))).then(function(result){worldArchive = result; loadWorldArchive();})
 }
 
+/** @type { any } */
 var identifiers = {};
 function doIdentifiers(){
-  document.getElementById("block-identifiers").innerHTML = "";
+  /** @type { HTMLDataElement } */ (document.getElementById("block-identifiers")).innerHTML = "";
   for(var i = 0; i < identifiers.prefixed_block_identifiers.enum.length; i++){
-    document.getElementById("block-identifiers").innerHTML += '<option value="'+ identifiers.prefixed_block_identifiers.enum[i] +'"></option>';
+    /** @type { HTMLDataElement } */ (document.getElementById("block-identifiers")).innerHTML += '<option value="'+ identifiers.prefixed_block_identifiers.enum[i] +'"></option>';
   }
   
-  document.getElementById("flat-biome").innerHTML = "";
-  document.getElementById("inf-biome").innerHTML = "";
+  /** @type { HTMLSelectElement } */ (document.getElementById("flat-biome")).innerHTML = "";
+  /** @type { HTMLSelectElement } */ (document.getElementById("inf-biome")).innerHTML = "";
   for(var i = 0; i < Object.keys(biomeData).length; i++){
     if(biomeData[Object.keys(biomeData)[i]].numeric) {
-      document.getElementById("flat-biome").innerHTML += '<option value="'+ biomeData[Object.keys(biomeData)[i]].numeric +'">'+ Object.keys(biomeData)[i] +'</option>';
+      /** @type { HTMLSelectElement } */ (document.getElementById("flat-biome")).innerHTML += '<option value="'+ biomeData[Object.keys(biomeData)[i]].numeric +'">'+ Object.keys(biomeData)[i] +'</option>';
     }
-    document.getElementById("inf-biome").innerHTML += '<option value="'+ Object.keys(biomeData)[i] +'">'+ Object.keys(biomeData)[i] +'</option>';
+    /** @type { HTMLSelectElement } */ (document.getElementById("inf-biome")).innerHTML += '<option value="'+ Object.keys(biomeData)[i] +'">'+ Object.keys(biomeData)[i] +'</option>';
   }
 }
 
@@ -130,26 +140,33 @@ var flatWorldLayers = {
   "world_version": "version.post_1_18"
 };
 
+/**
+ * @param { string } identifier
+ * @param { number } count
+ * @param { number } layerIndex
+ */
 function renderLayer(identifier, count, layerIndex){
-  if(flatWorldLayers.block_layers[parseFloat(layerIndex)].block_data){
-    delete flatWorldLayers.block_layers[parseFloat(layerIndex)].block_data;
+  // @ts-expect-error - 'block_data' is not typed out in the object
+  if(flatWorldLayers.block_layers[parseFloat(`${layerIndex}`)].block_data){
+    // @ts-expect-error - 'block_data' is not typed out in the object
+    delete flatWorldLayers.block_layers[parseFloat(`${layerIndex}`)].block_data;
   }
   
   var layer = document.createElement("div");
-  layer.classList = ["app-inner-inner"];
+  layer.classList.add("app-inner-inner");
   var itemEngine = document.createElement("mcitem");
   itemEngine.setAttribute("identifier", identifier);
-  itemEngine.setAttribute("count", count);
+  itemEngine.setAttribute("count", `${count}`);
   itemEngine.setAttribute("width", "45px");
   itemEngine.setAttribute("height", "45px");
-  itemEngine.style = "font-size:6pt;cursor:default;";
-  itemEngine.classList = ["nohover"];
+  itemEngine.setAttribute("style","font-size:6pt;cursor:default;");
+  itemEngine.classList.add("nohover");
   //itemEngine.setAttribute("allowlist", "identifiers.prefixed_block_identifiers.enum");
 
   var identifierInput = document.createElement("input");
   identifierInput.type = "text";
-  identifierInput.classList = ["app-input"];
-  identifierInput.style = "font-size: 8pt; width: 200px;";
+  identifierInput.classList.add("app-input");
+  identifierInput.setAttribute("style","font-size: 8pt; width: 200px;");
   identifierInput.setAttribute("list", "block-identifiers");
   identifierInput.value = identifier;
   
@@ -158,12 +175,12 @@ function renderLayer(identifier, count, layerIndex){
 
   var countInput = document.createElement("input");
   countInput.type = "number";
-  countInput.classList = ["app-input"];
+  countInput.classList.add("app-input");
   countInput.min = "1";
-  countInput.value = count;
+  countInput.value = `${count}`;
   
   var inputResponse = function(){
-    flatWorldLayers.block_layers[parseFloat(layerIndex)] = {
+    flatWorldLayers.block_layers[parseFloat(`${layerIndex}`)] = {
       "block_name": identifierInput.value,
       "count": parseFloat(countInput.value)
     };
@@ -181,17 +198,22 @@ function renderLayer(identifier, count, layerIndex){
   layer.appendChild(text);
   layer.appendChild(countInput);
     var buttons = document.createElement("div");
-    buttons.style="display:inline-block; cursor: pointer; margin-left: 10px; margin-right: 10px;";
+    buttons.setAttribute("style","display:inline-block; cursor: pointer; margin-left: 10px; margin-right: 10px;");
     buttons.innerHTML = ' <img src="https://cdn.glitch.me/17ff8eee-9239-4ba0-8a5c-9263261550b5%2Fcopy.png?v=1617471081488" class="minibutton" onclick="duplicateLayer('+layerIndex+')"> <img src="https://cdn.glitch.me/17ff8eee-9239-4ba0-8a5c-9263261550b5%2Ficon_trash.png?v=1616555108211" class="minibutton" onclick="deleteLayer('+layerIndex+')"> <img src="https://cdn.glitch.me/17ff8eee-9239-4ba0-8a5c-9263261550b5%2Farrow_down_small.png?v=1616861430478" onclick="moveLayer('+layerIndex+', 1)" style="-webkit-transform: scaleY(-1); transform: scaleY(-1);" class="minibutton"> <img src="https://cdn.glitch.me/17ff8eee-9239-4ba0-8a5c-9263261550b5%2Farrow_down_small.png?v=1616861430478" onclick="moveLayer('+layerIndex+', -1)" class="minibutton">';
   layer.appendChild(buttons);
   
-  document.getElementById("layers-list").appendChild(layer);
+  /** @type { HTMLDivElement } */ (document.getElementById("layers-list")).appendChild(layer);
   
+  // @ts-expect-error - 'items.items' is not typed out
   if(mcitems.data.items.items){
     mcitems.init();
   }
 }
 
+/**
+ * @param { string } identifier
+ * @param { string } count
+*/
 function newLayer(identifier, count){
   flatWorldLayers.block_layers.push({
     "block_name": identifier,
@@ -201,27 +223,36 @@ function newLayer(identifier, count){
   renderFlatWorld();
 }
 
+/**
+ * @param { true } [justParse]
+*/
 function renderFlatWorld(justParse){
   if(!justParse){
-    document.getElementById("layers-list").innerHTML = "";
+    /** @type { HTMLDivElement } */ (document.getElementById("layers-list")).innerHTML = "";
     for(var i = 0; i < flatWorldLayers.block_layers.length; i++){
       var ind = flatWorldLayers.block_layers.length - (i + 1);
       var currentLayer = flatWorldLayers.block_layers[ind];
       renderLayer(currentLayer.block_name, currentLayer.count, ind);
     }
 
-    document.getElementById("flat-biome").value = flatWorldLayers.biome_id;
+    /** @type { HTMLSelectElement } */ (document.getElementById("flat-biome")).value = `${flatWorldLayers.biome_id}`;
   }
   
   leveldat.value["FlatWorldLayers"].value = JSON.stringify(flatWorldLayers);
   worldArchive.file("level.dat", nbt.writeUncompressed(leveldat, 'little'));
 }
 
+/**
+ * @param { number } index
+*/
 function duplicateLayer(index){
   flatWorldLayers.block_layers.splice(index, 0, flatWorldLayers.block_layers[index]);
   renderFlatWorld();
 }
 
+/**
+ * @param { number } index
+*/
 function deleteLayer(index){
   flatWorldLayers.block_layers.splice(index, 1);
   renderFlatWorld();
@@ -230,6 +261,10 @@ function deleteLayer(index){
   }
 }
 
+/**
+ * @param { number } index
+ * @param { number } mod
+*/
 function moveLayer(index, mod){
   if(mod == -1 && index == 0){
     return;
@@ -238,30 +273,42 @@ function moveLayer(index, mod){
   renderFlatWorld();
 }
 
+/**
+ * @param { string } value
+*/
 function changeFlatBiome(value){
   flatWorldLayers.biome_id = parseFloat(value);
   
   renderFlatWorld();
 }
 
+/**
+ * @param { string } value
+*/
 function changeInfBiome(value){
   leveldat.value.BiomeOverride.value = value;
   if(leveldat.value.RandomSeed) delete leveldat.value.RandomSeed;
 }
 
+/**
+ * @param { string } value
+*/
 function changeInfSeed(value){
   if(leveldat.value.RandomSeed) delete leveldat.value.RandomSeed;
 }
 
 function changeOldWorld(){
-  leveldat.value.limitedWorldWidth.value = parseFloat(document.getElementById("old-width").value);
-  leveldat.value.limitedWorldDepth.value = parseFloat(document.getElementById("old-depth").value);
-  leveldat.value.LimitedWorldOriginX.value = parseFloat(document.getElementById("old-x").value);
-  leveldat.value.LimitedWorldOriginZ.value = parseFloat(document.getElementById("old-z").value);
+  leveldat.value.limitedWorldWidth.value = parseFloat(/** @type { HTMLInputElement } */ (document.getElementById("old-width")).value);
+  leveldat.value.limitedWorldDepth.value = parseFloat(/** @type { HTMLInputElement } */ (document.getElementById("old-depth")).value);
+  leveldat.value.LimitedWorldOriginX.value = parseFloat(/** @type { HTMLInputElement } */ (document.getElementById("old-x")).value);
+  leveldat.value.LimitedWorldOriginZ.value = parseFloat(/** @type { HTMLInputElement } */ (document.getElementById("old-z")).value);
   
   if(leveldat.value.RandomSeed) delete leveldat.value.RandomSeed
 }
 
+/**
+ * @param { boolean } bool
+*/
 function flatVersioning(bool){
   if(bool){
     if(!flatWorldLayers.world_version){
@@ -269,6 +316,7 @@ function flatVersioning(bool){
     }
   } else {
     if(flatWorldLayers.world_version){
+      // @ts-expect-error - non-optional property deletion
       delete flatWorldLayers.world_version;
     }
   }
@@ -277,7 +325,7 @@ function flatVersioning(bool){
 }
 
 function exportMcworld(){
-  var filename = "custom_" + document.getElementById("worldtype").value + "_world";
+  var filename = "custom_" + /** @type { HTMLSelectElement } */ (document.getElementById("worldtype")).value + "_world";
   
   //Remove world icon & Fix world name
   leveldat.value["LevelName"].value = filename;
@@ -289,7 +337,7 @@ function exportMcworld(){
   worldArchive.file("level.dat", fixedldb);
   worldArchive.generateAsync({type:"blob"})
   .then(function (blob) {
-    saveAs(blob, filename + ".mcworld");
+    window.saveAs(blob, filename + ".mcworld");
   });
 }
 

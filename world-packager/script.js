@@ -1,10 +1,14 @@
+// @ts-nocheck
+
 const nbt = require('prismarine-nbt');
 const { Buffer } = require('buffer');
 
 var jszip = new JSZip();
-var masterzip = "";
+/** @type { JSZip } */
+var masterzip;
 var packslist = [];
 var currentPack = {};
+/** @type { any } */
 var leveldat = {};
 var mdata = {
   bplist: [],
@@ -31,7 +35,7 @@ var wt_template = {
     ]
 };
 
-document.getElementById("file").addEventListener("change", function(){
+/** @type { HTMLInputElement } */ (document.getElementById("file")).addEventListener("change", function(){
   if(this.files && this.files[0]){
     jszip.loadAsync(this.files[0]).then(
       function(zip){
@@ -57,7 +61,7 @@ document.getElementById("file").addEventListener("change", function(){
   }
 });
 
-document.getElementById("packfile").addEventListener("change", function(){
+/** @type { HTMLInputElement } */ (document.getElementById("packfile")).addEventListener("change", function(){
   if(this.files && this.files[0]){
     var testzip = new JSZip();
     testzip.loadAsync(this.files[0]).then(
@@ -68,7 +72,7 @@ document.getElementById("packfile").addEventListener("change", function(){
   }
 });
 
-document.getElementById("packiconfile").addEventListener("change", function(){
+/** @type { HTMLInputElement } */ (document.getElementById("packiconfile")).addEventListener("change", function(){
   if(this.files && this.files[0]){
     var fr = new FileReader();
     fr.onload = function(e){
@@ -85,7 +89,7 @@ document.getElementById("packiconfile").addEventListener("change", function(){
   }
 });
 
-document.getElementById("worldiconfile").addEventListener("change", function(){
+/** @type { HTMLInputElement } */ (document.getElementById("worldiconfile")).addEventListener("change", function(){
   if(this.files && this.files[0]){
     var fr = new FileReader();
     fr.onload = function(e){
@@ -104,13 +108,13 @@ document.getElementById("worldiconfile").addEventListener("change", function(){
 var inForcedMode = false;
 function closeEditors(){
   if(!inForcedMode){
-    document.getElementById("overlay").style.display = "none";
-    document.getElementById("settings-editor").style.display = "none";
-    document.getElementById("gamerules-editor").style.display = "none";
-    document.getElementById("restrictions-editor").style.display = "none";
-    document.getElementById("misc-editor").style.display = "none";
-    document.getElementById("upload-notice").style.display = "none";
-    document.getElementById("download-notice").style.display = "none";
+    /** @type { HTMLElement } */ (document.getElementById("overlay")).style.display = "none";
+    /** @type { HTMLElement } */ (document.getElementById("settings-editor")).style.display = "none";
+    /** @type { HTMLElement } */ (document.getElementById("gamerules-editor")).style.display = "none";
+    /** @type { HTMLElement } */ (document.getElementById("restrictions-editor")).style.display = "none";
+    /** @type { HTMLElement } */ (document.getElementById("misc-editor")).style.display = "none";
+    /** @type { HTMLElement } */ (document.getElementById("upload-notice")).style.display = "none";
+    /** @type { HTMLElement } */ (document.getElementById("download-notice")).style.display = "none";
   }
 }
 
@@ -440,6 +444,9 @@ function selectPack(el){
   }
 }
 
+/**
+ * @param { "up" } [mode]
+*/
 function movePack(mode){
   var modifier = 1;
   if(mode == "up"){
@@ -675,6 +682,9 @@ function updateManifest(){
   masterzip.file(packtype + "/" + currentPack.metadata.folder + "/manifest.json", JSON.stringify(fileManifest, null, 3));
 }
 
+/**
+ * @param { import("jszip") } zip
+*/
 function processUplPack(zip){
   var filenames = Object.keys(zip.files);
   if(!filenames.includes("manifest.json")){
@@ -697,6 +707,12 @@ function processUplPack(zip){
   });
 }
 
+/**
+ * @param { string } name
+ * @param { string } type
+ * @param { import("jszip") } zip
+ * @param { any } manifest
+*/
 function addUplPack(name, type, zip, manifest){
   var filenames = Object.keys(zip.files);
   var path = type + "/" + name + "/";

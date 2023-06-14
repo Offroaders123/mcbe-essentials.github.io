@@ -127,8 +127,8 @@ function loadApp(path, elem, category){
   if(window.location.href == link){
     elem.setAttribute("class", "app-label selected");
     document.title = path.name + " - MCBE Essentials";
-    document.getElementById(category).parentNode.open = true;
-    document.getElementById(category).parentNode.children[0].style.pointerEvents = 'none';
+    /** @type { HTMLDetailsElement } */ (/** @type { HTMLElement } */ (document.getElementById(category)).parentNode).open = true;
+    /** @type { HTMLElement } */ (/** @type { HTMLDetailsElement } */ (/** @type { HTMLElement } */ (document.getElementById(category)).parentNode).children[0]).style.pointerEvents = 'none';
     
     if(document.getElementsByTagName("h1").length !== 0)
     document.getElementsByTagName("h1")[0].innerHTML = '<svg viewBox="0 0 24 24" style="height: 48px; vertical-align: middle;">' + path.icon.data + "</svg> " + path.name;
@@ -166,22 +166,22 @@ function loadApp(path, elem, category){
   
   if(path.beta || path.bridge || path.hasOwnProperty("tags")){
     let taggroup = document.createElement("div");
-    taggroup.classList = ["small-tag-group"];
+    taggroup.classList.add("small-tag-group");
     
     //Create tags
     if(path.beta){
       let newtag = document.createElement("tag");
-      newtag.classList = ["smalltag"];
+      newtag.classList.add("smalltag");
       newtag.innerHTML = "BETA";
-      newtag.style = "background-color:red;color:white;"
+      newtag.setAttribute("style","background-color:red;color:white;")
       taggroup.appendChild(newtag);
     }
     
     if(path.bridge){
       let newtag = document.createElement("tag");
-      newtag.classList = ["smalltag"];
+      newtag.classList.add("smalltag");
       newtag.innerHTML = "BRIDGE";
-      newtag.style = "background-color:#0096c7;color:white;";
+      newtag.setAttribute("style","background-color:#0096c7;color:white;");
       taggroup.appendChild(newtag);
     }
     
@@ -221,8 +221,8 @@ function toggleMenu(btn){
 }
 
 if(document.getElementById("head")){
-  document.getElementById("head").addEventListener("click", function(e){
-    if(e.target.hasAttribute('class') && e.target.getAttribute("class").includes("imgicon") && !document.body.classList.contains("embedded-frame")){
+  /** @type { HTMLDivElement } */ (document.getElementById("head")).addEventListener("click", function(e){
+    if(/** @type { Element } */ (e.target).classList.contains("imgicon") && !document.body.classList.contains("embedded-frame")){
       window.location.href="/";
     } else if(document.body.classList.contains("embedded-frame")){
       snackbar("MCBE Essentials is created and maintained by ReBrainerTV. If you've found a bug, join the MCBE Essentials discord server to report it!");
