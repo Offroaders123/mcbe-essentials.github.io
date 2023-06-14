@@ -5,7 +5,12 @@
     "bridge-iframe-api": "^0.4.11"
   },
   "dependencies": {
+    "bedrock-provider": "^3.0.0",
     "jszip": "^3.10.1",
-    "prismarine-nbt": "^2.2.1"
+    "leveldb-zlib": "^1.2.0",
+    "prismarine-block": "^1.16.3",
+    "prismarine-chunk": "^1.33.1",
+    "prismarine-nbt": "^2.2.1",
+    "prismarine-registry": "^1.7.0"
   }
 }

@@ -20,7 +20,7 @@ function bImport(filedata, filereference, filepath){
     document.getElementById("upload2").style.display="none";
   }*/
   
-  importFile(new File([filedata], 'file'), 'importedData', /** @type { HTMLInputElement } */ (document.getElementById("dataFileInput")).getAttribute("readertype"), parseImportedData);
+  importFile(new File([filedata], 'file'), 'importedData', /** @type { ReaderType } */ (/** @type { HTMLInputElement } */ (document.getElementById("dataFileInput")).getAttribute("readertype")), parseImportedData);
   window.bridge.openedFile = filereference;
   window.bridge.openedPath = filepath;
 }
